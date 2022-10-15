@@ -151,6 +151,6 @@ observeTweets(({ $el, $actionList }) => {
 				const urls = tweet.videos.map(video => video.url)
 				bulkDownload(urls, format, { id, name, now })
 			}
-		})
+		}, { once: true })
 	})
 })

@@ -1,6 +1,7 @@
-chrome.runtime.onMessage.addListener(async (msg: Msg, _, sendResponse) => {
+chrome.runtime.onMessage.addListener((msg: Msg, _, sendResponse) => {
 	if (msg.type === 'get-format') {
-		const { format } = await chrome.storage.local.get('format')
-		sendResponse(format)
+		chrome.storage.local.get('format')
+			.then(({format}) => sendResponse(format))
+		return true
 	}
 })
