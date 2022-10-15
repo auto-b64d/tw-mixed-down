@@ -1,0 +1,24 @@
+{
+	"isModule": false,
+	"jsc": {
+		"minify": {
+			"compress": {
+				"arguments": true,
+				"dead_code": true,
+				"reduce_funcs": true,
+				"toplevel": false
+			}
+		},
+		"parser": {
+			"syntax": "typescript"
+		},
+		"target": "es2022"
+	},
+	"minify": true,
+	"module": {
+		"type": "es6",
+		"strict": true
+	},
+	"test": "\\.ts$",
+	"exclude": "\\.d\\.ts$"
+}

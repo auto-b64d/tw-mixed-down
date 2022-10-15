@@ -1,0 +1,14 @@
+{
+	"name": "tw-mixed-down",
+	"scripts": {
+		"build": "swc src -d dist",
+		"watch": "swc src -d dist -w"
+	},
+	"devDependencies": {
+		"@swc/cli": "^0.1.57",
+		"@swc/core": "^1.3.8",
+		"@types/chrome": "^0.0.197",
+		"chokidar": "^3.5.3",
+		"swc": "^1.0.11"
+	}
+}
