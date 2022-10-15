@@ -1,15 +1,14 @@
 type HE = HTMLElement
 
 interface Msgs {
-	download: {
-		id: string
-		name: string
-		now: string
-		urls: Array<string>
-	}
+	'get-format': never
+	format: string
 }
 type MsgType = keyof Msgs
-type Msg<Type extends MsgType = MsgType> = {
-	type: Type
-	value: Msgs[Type]
-}
+type Msg<Type extends MsgType = MsgType> =
+	Type extends any
+		? {
+			type: Type
+			value: Msgs[Type]
+		}
+		: never

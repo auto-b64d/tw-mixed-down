@@ -10,7 +10,13 @@ $downBtnScript.src = chrome.runtime.getURL(
 
 window.addEventListener('message', async (evt: MessageEvent<Msg>) => {
 	const { data: msg } = evt
-	if (msg.type === 'download') {
-		chrome.runtime.sendMessage<Msg<'download'>>(msg)
+	if (msg.type === 'get-format') {
+		chrome.runtime.sendMessage(msg)
+			.then(format => {
+				window.postMessage({
+					type: 'format',
+					value: format,
+				})
+			})
 	}
 })

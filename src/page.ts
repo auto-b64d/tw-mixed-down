@@ -75,6 +75,37 @@ const parse = (res: any) =>
 		}))
 		.filter(x => x.videos.length !== 0)
 
+const bulkDownload = async (
+	urls: Array<string>,
+	format: string | null,
+	formatArgs: Record<'id' | 'name' | 'now', string>
+) => {
+	const $dummyA = document.createElement('a')
+	$dummyA.style.display = 'none'
+	$dummyA.setAttribute('target', '_blank')
+	document.body.append($dummyA)
+	let n = 0
+	for (const url of urls) {
+		const stringifiedN = n.toString()
+		const stringifiedUrlCountLength = urls.length.toString().length
+		const filename = (format ?? '[now].mp4')
+			.replace(/\[id\]/g, formatArgs.id)
+			.replace(/\[name\]/, formatArgs.name)
+			.replace(/\[now\]/g, formatArgs.now)
+			.replace(/\[n\]/g, stringifiedN.padStart(stringifiedUrlCountLength - stringifiedN.length, '0'))
+		await fetch(url)
+			.then(res => res.blob())
+			.then(res => {
+				$dummyA.href = URL.createObjectURL(res)
+				$dummyA.setAttribute('download', filename)
+				$dummyA.click()
+				URL.revokeObjectURL($dummyA.href)
+			})
+		n++
+	}
+	$dummyA.remove()
+}
+
 const tweets: Array<any> = []
 onCapturedRequest(res => tweets.push(...parse(res)))
 
@@ -110,14 +141,16 @@ observeTweets(({ $el, $actionList }) => {
 			now.getMinutes(),
 			now.getSeconds(),
 		].map(x => x.toString().padStart(2, '0'))
-		window.postMessage({
-			type: 'download',
-			value: {
-				id,
-				name,
-				now: `${year}${month}${date}${hour}${minute}${second}`,
-				urls: tweet.videos.map(video => video.url),
-			},
+		window.postMessage({ type: 'get-format' })
+		
+		window.addEventListener('message', async (evt: MessageEvent<Msg>) => {
+			const { data: msg } = evt
+			if (msg.type === 'format') {
+				const format = msg.value
+				const now = `${year}${month}${date}${hour}${minute}${second}`
+				const urls = tweet.videos.map(video => video.url)
+				bulkDownload(urls, format, { id, name, now })
+			}
 		})
 	})
 })
