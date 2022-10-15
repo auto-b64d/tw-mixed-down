@@ -8,6 +8,11 @@ $downBtnScript.src = chrome.runtime.getURL(
 )
 ;(document.head ?? document.documentElement).append($downBtnScript, $pageScript)
 
+const port = chrome.runtime.connect({ name: 'heart' })
+setInterval(() => {
+	port.postMessage({ type: 'heartbeat' })
+}, 1000 * 60)
+
 window.addEventListener('message', async (evt: MessageEvent<Msg>) => {
 	const { data: msg } = evt
 	if (msg.type === 'get-format') {

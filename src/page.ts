@@ -126,7 +126,7 @@ observeTweets(({ $el, $actionList }) => {
 	const $tweet = $el.closest('article')!
 	const $downloadBtn = downloadBtn($actionList)
 	$actionList.append($downloadBtn)
-	$downloadBtn.addEventListener('click', async () => {
+	$downloadBtn.addEventListener('click', () => {
 		const $id = $tweet.querySelector<HTMLSpanElement>('a > div > span')!
 		const id = $id.innerText.slice(1)
 		const $dateA = $id.closest('a')!.parentElement!.nextElementSibling!.nextElementSibling!.firstElementChild!
@@ -142,15 +142,16 @@ observeTweets(({ $el, $actionList }) => {
 			now.getSeconds(),
 		].map(x => x.toString().padStart(2, '0'))
 		window.postMessage({ type: 'get-format' })
-		
-		window.addEventListener('message', async (evt: MessageEvent<Msg>) => {
+		const listener = (evt: MessageEvent<Msg>) => {
 			const { data: msg } = evt
 			if (msg.type === 'format') {
 				const format = msg.value
 				const now = `${year}${month}${date}${hour}${minute}${second}`
 				const urls = tweet.videos.map(video => video.url)
 				bulkDownload(urls, format, { id, name, now })
+				window.removeEventListener('message', listener)
 			}
-		}, { once: true })
+		}
+		window.addEventListener('message', listener)
 	})
 })
